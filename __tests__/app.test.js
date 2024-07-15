@@ -8,9 +8,21 @@ const {
   topicData,
   userData,
 } = require("../db/data/test-data/index");
+const endpoints = require("../endpoints.json");
 
 beforeEach(() => seed({ articleData, commentData, topicData, userData }));
 afterAll(() => db.end());
+
+describe("/api", () => {
+  it("GET: 200 returns an object  ", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toEqual(endpoints);
+      });
+  });
+});
 
 describe("/api/topics", () => {
   it("GET: 200 responds with an array of all topics to the client", () => {
