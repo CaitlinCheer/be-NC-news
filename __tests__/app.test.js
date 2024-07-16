@@ -51,7 +51,7 @@ describe("/api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then(({ body: {articles } }) => {
+      .then(({ body: { articles } }) => {
         articles.forEach((article) => {
           expect(article).toMatchObject({
             author: expect.any(String),
@@ -70,8 +70,10 @@ describe("/api/articles", () => {
     return request(app)
       .get("/api/articles")
       .then(({ body: { articles } }) => {
-        expect(articles).toBeSorted("created_at");
-        expect(articles).toBeSorted({ ascending: true });
+        expect(articles).toBeSortedBy("created_at", {
+          coerce: true,
+          descending: true,
+        });
       });
   });
 });
@@ -110,4 +112,56 @@ describe("/api/articles/article_id", () => {
         expect(response.body.msg).toBe("article not found");
       });
   });
+});
+describe("/api/articles/:article_id/comments", () => {
+  it("GET: 200 Should return an array of all comments for the corresponding article when input an id", () => {
+    return request(app)
+      .get("/api/articles/6/comments")
+      .expect(200)
+      .then(({ body: { articleComments } }) => {
+        expect(articleComments).toEqual([
+          {
+            comment_id: 16,
+            votes: 1,
+            created_at: "2020-10-11T15:23:00.000Z",
+            author: "butter_bridge",
+            body: "This is a bad article name",
+            article_id: 6,
+          },
+        ]);
+      });
+  });
+});
+it("Each comment should include the given properties in ASC order(asc by created_at): comment_id, voted, created_at, author, body, article_id", () => {
+  return request(app)
+    .get("/api/articles/1/comments")
+    .expect(200)
+    .then(({ body: { articleComments } }) => {
+      articleComments.forEach((comment) => {
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+        });
+      });
+    });
+});
+it("400: If input an incorrect id value should respond with the correct error message", () => {
+  return request(app)
+    .get("/api/articles/incorrect/comments")
+    .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe("incorrect input");
+    });
+});
+it("404: When a correct value is entered, but nothing is returned should return the correct error message", () => {
+  return request(app)
+    .get("/api/articles/30/comments")
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe("No comments avaliable");
+    });
 });
