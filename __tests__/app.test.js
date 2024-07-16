@@ -46,6 +46,35 @@ describe("/api/topics", () => {
       });
   });
 });
+describe("/api/articles", () => {
+  it("GET: 200 should respond with an array containing the article data", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: {articles } }) => {
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  it("Should be in order DESC by date", () => {
+    return request(app)
+      .get("/api/articles")
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted("created_at");
+        expect(articles).toBeSorted({ ascending: true });
+      });
+  });
+});
 describe("/api/articles/article_id", () => {
   it("GET: 200 responds with appropriate article", () => {
     return request(app)
