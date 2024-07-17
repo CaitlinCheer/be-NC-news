@@ -33,3 +33,19 @@ exports.selectAllArticles = () => {
     articles.created_at DESC;
     `);
 };
+
+exports.patchingArticleWithId = (article_id, patch) => {
+  const { inc_votes } = patch;
+  if (typeof inc_votes !== "number") {
+    return Promise.reject({ status: 400, msg: "Invalid input" });
+  }
+  return db.query(
+    `
+  UPDATE articles
+  SET votes = votes + $1
+  WHERE article_id = $2
+  RETURNING *
+  `,
+    [inc_votes, article_id]
+  );
+};

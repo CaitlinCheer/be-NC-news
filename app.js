@@ -4,6 +4,7 @@ const { getTopics } = require("./controllers/topics-controllers");
 const {
   getArticlesById,
   getAllArticles,
+  patchArticlesById,
 } = require("./controllers/article-controllers");
 const {
   getCommentsByArticleId,
@@ -25,15 +26,22 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentToId);
 
+app.patch("/api/articles/:article_id", patchArticlesById);
+
 app.use((err, req, res, next) => {
-    // console.log(err)
+  
+  if (!err.code) {
+    return next(err);
+  }
   if (err.code === "22P02") {
     res.status(400).send({ msg: "incorrect input" });
-  } else next(err);
+  }
 });
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
+  } else {
+    res.status(500).send({ msg: "Internal server error" });
   }
 });
 
