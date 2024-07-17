@@ -113,8 +113,8 @@ describe("/api/articles/article_id", () => {
       });
   });
 });
-describe("/api/articles/:article_id/comments", () => {
-  it("GET: 200 Should return an array of all comments for the corresponding article when input an id", () => {
+describe("GET:/api/articles/:article_id/comments", () => {
+  it("200 Should return an array of all comments for the corresponding article when input an id", () => {
     return request(app)
       .get("/api/articles/6/comments")
       .expect(200)
@@ -165,7 +165,7 @@ it("404: When a correct value is entered, but nothing is returned should return 
       expect(response.body.msg).toBe("No comments avaliable");
     });
 });
-describe("/api/articles/:article_id/comments", () => {
+describe("POST:/api/articles/:article_id/comments", () => {
   it("201: Should post a username and a body to a given article id when the id already exists", () => {
     const item = { username: "butter_bridge", body: "Body" };
     return request(app)
@@ -188,11 +188,63 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
   it("400: Returns correct error message when an incorrect value is input", () => {
+    const item = { username: "butter_bridge", body: "BodyTwo" };
     return request(app)
       .post("/api/articles/incorrect/comments")
+      .send(item)
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("incorrect input");
+      });
+  });
+  it("400: When missing one or more keys should return correct error message", () => {
+    const item = { username: "butter_bridge" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(item)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid input");
+      });
+  });
+  it("404: Responds with an error message when the username doesn't exist", () => {
+    const item = { username: "Invalid", body: "hello there" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(item)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Name doesn't exist in database");
+      });
+  });
+});
+describe("PATCH:/api/articles/:article_id", () => {
+  it("200: Should be able to patch an already existing article via article_id", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 10 })
+      .expect(200)
+      .then(({ body: patchedArticle }) => {
+        expect(patchedArticle.votes).toBe(110);
+      });
+  });
+
+  it("400: Returns an error when an incorrect input is sent", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "incorrect" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid input");
+      });
+  });
+  it("400: Returns error when an incorrect key is sent", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ incorrect: 10 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid input");
       });
   });
 });
