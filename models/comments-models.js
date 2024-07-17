@@ -1,7 +1,8 @@
 const db = require("../db/connection");
 
 exports.selectCommentsByArticleId = (article_id) => {
-  return db.query(`
+  return db.query(
+    `
     SELECT 
     comments.comment_id,
     comments.votes,
@@ -15,5 +16,21 @@ exports.selectCommentsByArticleId = (article_id) => {
 
     WHERE
     comments.article_id = $1
-    `,[article_id]);
+    `,
+    [article_id]
+  );
+};
+
+exports.postingCommentToId = (article_id, comment) => {
+  const { username, body } = comment;
+  if (!username || !body) {
+    return Promise.reject({ status: 400, msg: "Invalid input" });
+  }
+  return db.query(
+    `
+  INSERT INTO comments (author, body, article_id) 
+  VALUES ($1, $2, $3) RETURNING *
+  `,
+    [username, body, article_id]
+  );
 };

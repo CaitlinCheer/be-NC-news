@@ -165,3 +165,34 @@ it("404: When a correct value is entered, but nothing is returned should return 
       expect(response.body.msg).toBe("No comments avaliable");
     });
 });
+describe("/api/articles/:article_id/comments", () => {
+  it("201: Should post a username and a body to a given article id when the id already exists", () => {
+    const item = { username: "butter_bridge", body: "Body" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(item)
+      .expect(201)
+      .then(({ body: postedComment }) => {
+        expect(postedComment.author).toBe("butter_bridge");
+        expect(postedComment.body).toBe("Body");
+      });
+  });
+  it("404: Returns correct error when the article_id doesn't exist", () => {
+    const item = { username: "butter_bridge", body: "BodyTwo" };
+    return request(app)
+      .post("/api/articles/100/comments")
+      .send(item)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("ID not found");
+      });
+  });
+  it("400: Returns correct error message when an incorrect value is input", () => {
+    return request(app)
+      .post("/api/articles/incorrect/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("incorrect input");
+      });
+  });
+});
