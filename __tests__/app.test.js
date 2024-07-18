@@ -106,6 +106,24 @@ describe("/api/articles", () => {
         expect(response.body.msg).toBe("incorrect input");
       });
   });
+  it("200: Will return all articles when inputting the topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
+  });
+  it("404: Returns an error when a topic isn't found within the database", () => {
+    return request(app)
+      .get("/api/articles?topic=incorrect")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Topic not found");
+      });
+  });
 });
 describe("/api/articles/article_id", () => {
   it("GET: 200 responds with appropriate article", () => {

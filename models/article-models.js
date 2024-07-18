@@ -4,7 +4,8 @@ exports.selectArticlesByID = (article_id) => {
   return db.query(`SELECT * FROM articles WHERE article_id = $1`, [article_id]);
 };
 
-exports.selectAllArticles = (sort_by = "created_at", order = "DESC") => {
+exports.selectAllArticles = (sort_by = "created_at", order = "DESC", topic) => {
+  const queryArray = [];
   const acceptableSorts = [
     "created_at",
     "title",
@@ -21,7 +22,7 @@ exports.selectAllArticles = (sort_by = "created_at", order = "DESC") => {
     return Promise.reject({ status: 400, msg: "incorrect input" });
   }
 
-  const queryStr = `
+  let queryStr = `
     SELECT
       articles.author,
       articles.title,
@@ -37,13 +38,17 @@ exports.selectAllArticles = (sort_by = "created_at", order = "DESC") => {
       comments
     ON 
       articles.article_id = comments.article_id
-    GROUP BY
-      articles.article_id
-    ORDER BY 
-      ${sort_by} ${order.toUpperCase()};
-  `;
-
-  return db.query(queryStr);
+   `;
+  if (topic) {
+    queryStr += ` WHERE topic = $1`;
+    queryArray.push(topic);
+  }
+  queryStr += ` GROUP BY
+   articles.article_id
+   ORDER BY 
+  ${sort_by} ${order.toUpperCase()};
+`;
+  return db.query(queryStr, queryArray);
 };
 
 exports.patchingArticleWithId = (article_id, patch) => {
