@@ -20,11 +20,13 @@ exports.getArticlesById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { sort_by, order } = req.query;
-  console.log(req.query);
+  const { sort_by, order, topic } = req.query;
 
-  selectAllArticles(sort_by, order)
+  selectAllArticles(sort_by, order, topic)
     .then(({ rows }) => {
+      if(rows.length === 0){
+        return Promise.reject({status: 404, msg: "Topic not found"})
+      }
       res.status(200).send({ articles: rows });
     })
     .catch(next);
