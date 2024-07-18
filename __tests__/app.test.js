@@ -131,39 +131,40 @@ describe("GET:/api/articles/:article_id/comments", () => {
         ]);
       });
   });
-});
-it("Each comment should include the given properties in ASC order(asc by created_at): comment_id, voted, created_at, author, body, article_id", () => {
-  return request(app)
-    .get("/api/articles/1/comments")
-    .expect(200)
-    .then(({ body: { articleComments } }) => {
-      articleComments.forEach((comment) => {
-        expect(comment).toMatchObject({
-          comment_id: expect.any(Number),
-          votes: expect.any(Number),
-          created_at: expect.any(String),
-          author: expect.any(String),
-          body: expect.any(String),
-          article_id: expect.any(Number),
+  it("Each comment should include the given properties in ASC order(asc by created_at): comment_id, voted, created_at, author, body, article_id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { articleComments } }) => {
+        articleComments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
         });
       });
-    });
-});
-it("400: If input an incorrect id value should respond with the correct error message", () => {
-  return request(app)
-    .get("/api/articles/incorrect/comments")
-    .expect(400)
-    .then((response) => {
-      expect(response.body.msg).toBe("incorrect input");
-    });
-});
-it("404: When a correct value is entered, but nothing is returned should return the correct error message", () => {
-  return request(app)
-    .get("/api/articles/30/comments")
-    .expect(404)
-    .then((response) => {
-      expect(response.body.msg).toBe("No comments avaliable");
-    });
+  });
+
+  it("400: If input an incorrect id value should respond with the correct error message", () => {
+    return request(app)
+      .get("/api/articles/incorrect/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("incorrect input");
+      });
+  });
+  it("404: When a correct value is entered, but nothing is returned should return the correct error message", () => {
+    return request(app)
+      .get("/api/articles/30/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("No comments avaliable");
+      });
+  });
 });
 describe("POST:/api/articles/:article_id/comments", () => {
   it("201: Should post a username and a body to a given article id when the id already exists", () => {
@@ -252,20 +253,37 @@ describe("DELETE:/api/comments/:comment_id", () => {
   it("204: When input an id should delete the given comment and return empty", () => {
     return request(app).delete("/api/comments/1").expect(204);
   });
+  it("400: Returns correct error when an invalid id is input", () => {
+    return request(app)
+      .delete("/api/comments/invalid")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("incorrect input");
+      });
+  });
+  it("404: Should return corrcet error when a comment is not found", () => {
+    return request(app)
+      .delete("/api/comments/100")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Comment was not found");
+      });
+  });
 });
-it("404: Should return corrcet error when a comment is not found", () => {
-  return request(app)
-    .delete("/api/comments/100")
-    .expect(404)
-    .then((response) => {
-      expect(response.body.msg).toBe("Comment was not found");
-    });
-});
-it("400: Returns correct error when an invalid id is input", () => {
-  return request(app)
-    .delete("/api/comments/invalid")
-    .expect(400)
-    .then((response) => {
-      expect(response.body.msg).toBe("incorrect input");
-    });
+describe("GET:/api/users", () => {
+  it("200: Should return an array consisting of all users containing the following properties: username, name, avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { allUsers } }) => {
+        allUsers.forEach((user) => {
+          console.log(user);
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
 });

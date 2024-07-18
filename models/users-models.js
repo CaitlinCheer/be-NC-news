@@ -20,3 +20,10 @@ exports.checksUserExists = (username) => {
       return foundUserData;
     });
 };
+
+exports.selectAllUsers = () => {
+  return db.query(`
+  SELECT *
+  FROM users
+  `);
+};
