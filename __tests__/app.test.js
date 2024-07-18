@@ -76,6 +76,36 @@ describe("/api/articles", () => {
         });
       });
   });
+  it("Should be able to sort by any of the allowed values: title, topic, author, body, article_img_url", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", {
+          coerce: true,
+          descending: true,
+        });
+      });
+  });
+  it("Should be allowed to be ordered by either DESC or ASC", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", {
+          coerce: true,
+          ascending: true,
+        });
+      });
+  });
+  it("400: When an incorrect value is input, returns an error", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalid")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("incorrect input");
+      });
+  });
 });
 describe("/api/articles/article_id", () => {
   it("GET: 200 responds with appropriate article", () => {
@@ -277,7 +307,6 @@ describe("GET:/api/users", () => {
       .expect(200)
       .then(({ body: { allUsers } }) => {
         allUsers.forEach((user) => {
-          console.log(user);
           expect(user).toMatchObject({
             username: expect.any(String),
             name: expect.any(String),
