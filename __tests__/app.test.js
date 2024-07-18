@@ -248,3 +248,24 @@ describe("PATCH:/api/articles/:article_id", () => {
       });
   });
 });
+describe("DELETE:/api/comments/:comment_id", () => {
+  it("204: When input an id should delete the given comment and return empty", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+});
+it("404: Should return corrcet error when a comment is not found", () => {
+  return request(app)
+    .delete("/api/comments/100")
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe("Comment was not found");
+    });
+});
+it("400: Returns correct error when an invalid id is input", () => {
+  return request(app)
+    .delete("/api/comments/invalid")
+    .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe("incorrect input");
+    });
+});

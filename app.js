@@ -9,6 +9,7 @@ const {
 const {
   getCommentsByArticleId,
   postCommentToId,
+  deleteCommentById,
 } = require("./controllers/comments-controllers");
 const { getApi } = require("./controllers/api-controllers");
 
@@ -28,8 +29,10 @@ app.post("/api/articles/:article_id/comments", postCommentToId);
 
 app.patch("/api/articles/:article_id", patchArticlesById);
 
+app.delete("/api/comments/:comment_id", deleteCommentById);
+
 app.use((err, req, res, next) => {
-  
+  console.log(err);
   if (!err.code) {
     return next(err);
   }

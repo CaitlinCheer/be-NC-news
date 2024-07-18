@@ -28,8 +28,7 @@ exports.postingCommentToId = (article_id, comment) => {
   if (!username || !body) {
     return Promise.reject({ status: 400, msg: "Invalid input" });
   }
-  return checksUserExists(username)
-  .then(() => {
+  return checksUserExists(username).then(() => {
     return db.query(
       `
     INSERT INTO comments (author, body, article_id)
@@ -38,4 +37,26 @@ exports.postingCommentToId = (article_id, comment) => {
       [username, body, article_id]
     );
   });
+};
+
+exports.selectCommentsByCommentId = (comment_id) => {
+  return db.query(
+    `
+  SELECT * 
+  FROM comments
+  WHERE comment_id = $1
+  `,
+    [comment_id]
+  );
+};
+
+exports.deletingCommentById = (comment_id) => {
+  return db.query(
+    `
+  DELETE
+  FROM comments
+  WHERE comment_id = $1
+  `,
+    [comment_id]
+  );
 };
