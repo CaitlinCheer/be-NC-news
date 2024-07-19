@@ -10,6 +10,7 @@ app.use(express.json());
 app.use("/api", apiRouter);
 
 app.use((err, req, res, next) => {
+ 
   if (!err.code) {
     return next(err);
   }

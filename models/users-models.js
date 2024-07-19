@@ -27,3 +27,13 @@ exports.selectAllUsers = () => {
   FROM users
   `);
 };
+
+exports.selectUsernameByUsername = (username) => {
+  return db.query(
+    `
+  SELECT * 
+  FROM users
+  WHERE username = $1`,
+    [username]
+  );
+};
