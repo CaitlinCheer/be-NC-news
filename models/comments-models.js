@@ -60,3 +60,16 @@ exports.deletingCommentById = (comment_id) => {
     [comment_id]
   );
 };
+
+exports.patchCommentById = (comment_id, patch) => {
+const {inc_votes} = patch
+if(typeof inc_votes !== "number"){
+  return Promise.reject({ status: 400, msg: "Invalid input" })
+}
+return db.query(`
+UPDATE comments
+SET votes = votes + $1
+WHERE article_id = $2
+RETURNING *
+`, [inc_votes, comment_id])
+}

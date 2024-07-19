@@ -318,6 +318,45 @@ describe("DELETE:/api/comments/:comment_id", () => {
       });
   });
 });
+describe("PATCH:/api/comments/:comment_id", () => {
+  it("200: Should be able to patch an already existing comment using comment_id", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 10 })
+      .expect(200)
+      .then(({ body: patchedcomment }) => {
+        expect(patchedcomment.votes).toBe(24);
+      });
+  });
+
+  it("400: Returns an error when an incorrect input is sent", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "incorrect" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid input");
+      });
+  });
+  it("400: Returns error when an incorrect key is sent", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ incorrect: 10 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid input");
+      });
+  });
+  it("404: Returns a 404 message if no comments were found", () => {
+    return request(app)
+      .patch("/api/comments/1000")
+      .send({ inc_votes: 10 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("comments not found");
+      });
+  });
+});
 describe("GET:/api/users", () => {
   it("200: Should return an array consisting of all users containing the following properties: username, name, avatar_url", () => {
     return request(app)
