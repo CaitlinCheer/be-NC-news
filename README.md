@@ -15,7 +15,6 @@ Running tests: npm test
 
 Link to hosted: https://be-nc-news-74y2.onrender.com
 
-
 Minimum versions needed to run this file:
 
 Node.js: 14.x
@@ -25,5 +24,6 @@ Understanding this project:
 
 This is an api built with express, node.js and prosgreSQL.
 Designed for users, giving them the options to GET, POST, DELETE and PATCH articles, comments and topics.
+For a clear understanding of what each endpoint does, you can view the endpoints.json for a definition and example response of each endpoints.
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
