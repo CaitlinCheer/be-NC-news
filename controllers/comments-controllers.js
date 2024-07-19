@@ -3,6 +3,7 @@ const {
   postingCommentToId,
   selectCommentsByCommentId,
   deletingCommentById,
+  patchCommentById,
 } = require("../models/comments-models.js");
 const { selectArticlesByID } = require("../models/article-models.js");
 
@@ -48,6 +49,23 @@ exports.deleteCommentById = (req, res, next) => {
     })
     .then(() => {
       res.sendStatus(204);
+    })
+    .catch(next);
+};
+exports.patchingCommentById = (req, res, next) => {
+  const { comment_id } = req.params;
+  const patch = req.body;
+
+  selectCommentsByCommentId(comment_id)
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "comments not found" });
+      }
+      return patchCommentById(comment_id, patch);
+    })
+    .then(({ rows }) => {
+      const patchedComment = rows[0];
+      res.status(200).send(patchedComment);
     })
     .catch(next);
 };
