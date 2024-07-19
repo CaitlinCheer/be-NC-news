@@ -334,3 +334,33 @@ describe("GET:/api/users", () => {
       });
   });
 });
+describe("GET:/api/users/:username", () => {
+  it("200: Returns the data of a user using a given username", () => {
+    return request(app)
+      .get("/api/users/lurker")
+      .expect(200)
+      .then(({ body: { usernameData } }) => {
+        expect(usernameData).toMatchObject({
+          username: expect.any(String),
+          avatar_url: expect.any(String),
+          name: expect.any(String),
+        });
+      });
+  });
+  it("400: Should return an error if a wrong input is used in the url", () => {
+    return request(app)
+      .get("/api/users/100")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("incorrect input");
+      });
+  });
+  it("404: Should respond correct error message when a username isn't found within the database", () => {
+    return request(app)
+      .get("/api/users/incorrect")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("username not found");
+      });
+  });
+});
