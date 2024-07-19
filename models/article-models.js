@@ -1,7 +1,14 @@
 const db = require("../db/connection");
 
 exports.selectArticlesByID = (article_id) => {
-  return db.query(`SELECT * FROM articles WHERE article_id = $1`, [article_id]);
+  return db.query(`
+  SELECT articles.*,
+  COUNT(comments.comment_id) AS comment_count
+  FROM articles
+  LEFT JOIN comments ON articles.article_id = comments.article_id
+  WHERE articles.article_id = $1
+  GROUP BY articles.article_id
+  `, [article_id]);
 };
 
 exports.selectAllArticles = (sort_by = "created_at", order = "DESC", topic) => {

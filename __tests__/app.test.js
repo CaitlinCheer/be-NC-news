@@ -23,7 +23,6 @@ describe("/api", () => {
       });
   });
 });
-
 describe("/api/topics", () => {
   it("GET: 200 responds with an array of all topics to the client", () => {
     return request(app)
@@ -141,6 +140,7 @@ describe("/api/articles/article_id", () => {
           votes: 100,
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: expect.any(String),
         });
       });
   });
